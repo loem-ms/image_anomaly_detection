@@ -1,13 +1,13 @@
 # image_anomaly_detection
 
 ## Setup
-- We confirmed process with `Python3.10` on macOS
-- Install `node.js` and `npm `
-- Install requirements descripted in `requirements.txt`
+- We confirmed this work with `Python3.10` on macOS
+- Please install `node.js` and `npm ` to run the application
+- Install required libraries/modules in `requirements.txt` for backend-related requirements
 ```bash
     % pip install -r requirements
 ```
-- Install requirments for frontend
+- Install additional requirments for frontend (loading symbol while waiting response)
 ```bash
     % npm install react-promise-tracker
     % npm install react-loader-spinner
@@ -15,15 +15,24 @@
 
 ## Front-end
 ```bash
-    % cd frontend
-    % npx create-react-app app
+    % cd frontend/app
+    % npm start
 ```
 
 ## Back-end
 ```bash
     % cd backend
-    # Training
+    # Run server
+    % python server.py \
+        --model_checkpoint ./checkpoints/checkpoint_for_demo.pth \
+        --encoded_trainingdata ./checkpoints/train_for_demo.csv
+```
+
+## How to prepare model for backend?
+```bash
+    # Training model
     % python train.py --epoch_num 200 \
+        --image_class "pill" \
         --learning_rate 0.001 \
         --batch_size 8 \
         --seed 0 \
@@ -33,7 +42,9 @@
         --log_file ./checkpoints/train.log \
         --dataset_dir ./dataset \
         --checkpoint_dir ./checkpoints
-    # Encoding
+    # Encoding: encode training data with trained model 
+    # The encoded vectors will be used for Gaussian Density Estimation
+    # for setting threshold in checking anomaly 
     % python encode.py --batch_size 8 \
         --encoded_dim 64 \
         --feedforward_hidden_dim 512 \
@@ -43,17 +54,5 @@
         --checkpoint ./checkpoints/checkpoint_last.pth \
         --subset_to_encode "train" \
         --output_file_pref ./checkpoints
-```
-
-## Run Server
-```bash
-    % cd backend
-    % python server.py \
-        --model_checkpoint ./checkpoints/checkpoint_for_demo.pth \
-        --encoded_trainingdata ./checkpoints/train_for_demo.csv
-```
-
-```bash
-    % cd frontend/app
-    % npm start
+    
 ```
