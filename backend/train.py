@@ -82,11 +82,13 @@ def parse_args():
     return args
 
 def train_epoch(model, device, dataloader, loss_func, optimizer):
+    model.to(device)
     model.train()
 
     train_loss = []
     for src in dataloader:
         src = src.to(device)
+        print(src.shape)
         res = model(src)
         loss = loss_func(res, src)
         optimizer.zero_grad()
@@ -123,7 +125,7 @@ def main():
     ffn_hidden_dim = args.feedforward_hidden_dim
     dropout = args.dropout_rate
 
-    model = ResNetVAE(encoded_dim, ffn_hidden_dim, ffn_hidden_dim, dropout).to(device)
+    model = ResNetVAE(encoded_dim, ffn_hidden_dim * 2, ffn_hidden_dim, dropout).to(device)
     checkpoint_dir = args.checkpoint_dir
     torch.save(model.state_dict(), os.path.join(checkpoint_dir, 'model_init.pth'))
 

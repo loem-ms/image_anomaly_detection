@@ -12,6 +12,24 @@ from flask import request
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
+import argparse
+
+parser = argparse.ArgumentParser(
+        description="Settings for server"
+    )
+    
+parser.add_argument(
+        "--model_checkpoint",
+        help='checkpoint to use in web application'
+)
+    
+parser.add_argument(
+        "--encoded_trainingdata",
+        help='path to csv file saved encoded training data'
+)
+
+args = parser.parse_args()
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '../frontend/app/src/media'
 CORS(app)
@@ -20,7 +38,7 @@ encoded_dim = 64
 ffn_hidden_dim = 512
 
 model = ResNetVAE(encoded_dim, ffn_hidden_dim * 2, ffn_hidden_dim)
-model.load_state_dict(torch.load("./checkpoints/model_resnet_scratch190.pth", map_location=torch.device('cpu')))
+model.load_state_dict(torch.load(args.model_checkpoint, map_location=torch.device('cpu')))
 model.eval()
 
 image_transforms = transforms.Compose([
@@ -28,7 +46,7 @@ image_transforms = transforms.Compose([
     transforms.ToTensor(),
 ])
 
-encoded_good_vectors = np.loadtxt('./checkpoints/encoded_traindata_pill.csv', delimiter=',')
+encoded_good_vectors = np.loadtxt(args.encoded_trainingdata, delimiter=',')
 kernel_density = KernelDensity(kernel="gaussian", bandwidth=0.2).fit(encoded_good_vectors)
 threshold = np.min(
     kernel_density.score_samples(encoded_good_vectors)

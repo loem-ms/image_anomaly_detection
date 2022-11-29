@@ -95,8 +95,8 @@ def main():
     encoded_dim = args.encoded_dim
     ffn_hidden_dim = args.feedforward_hidden_dim
 
-    model = ResNetVAE(encoded_dim, ffn_hidden_dim, ffn_hidden_dim).to(device)
-    model.load_state_dict(torch.load(args.checkpoint))
+    model = ResNetVAE(encoded_dim, ffn_hidden_dim * 2, ffn_hidden_dim).to(device)
+    model.load_state_dict(torch.load(args.checkpoint, map_location=torch.device('cpu')))
     model.eval()
     
     logging.info(f"Using checkpoint from {args.checkpoint}")
