@@ -21,7 +21,7 @@
 
 ## Back-end
 ```bash
-    % cd ../backend
+    % cd backend
     # Training
     % python train.py --epoch_num 200 \
         --learning_rate 0.001 \
@@ -43,4 +43,17 @@
         --checkpoint ./checkpoints/checkpoint_last.pth \
         --subset_to_encode "train" \
         --output_file_pref ./checkpoints
+```
+
+## Run Server
+```bash
+    % cd backend
+    % python server.py \
+        --model_checkpoint ./checkpoints/checkpoint_for_demo.pth \
+        --encoded_trainingdata ./checkpoints/train_for_demo.csv
+```
+
+```bash
+    % cd frontend/app
+    % npm start
 ```
